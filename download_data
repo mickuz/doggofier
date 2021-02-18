@@ -1,0 +1,72 @@
+#!/bin/bash
+
+dir=data
+subdir_images=images
+subdir_annots=annotations
+
+# Downloading the images
+data_links=(
+    [1]="https://cloud.tsinghua.edu.cn/f/d2031efb239c4dde9c6c/?dl=1"
+    [2]="https://cloud.tsinghua.edu.cn/f/6a242a6bba664537ba45/?dl=1"
+    [3]="https://cloud.tsinghua.edu.cn/f/d17034fa14f54e4381d8/?dl=1"
+    [4]="https://cloud.tsinghua.edu.cn/f/3740fc44cd484e1cb089/?dl=1"
+    [5]="https://cloud.tsinghua.edu.cn/f/ff5d96a0bc4e4dba9004/?dl=1"
+    [6]="https://cloud.tsinghua.edu.cn/f/d5fe5c88198c4387a7bb/?dl=1"
+    [7]="https://cloud.tsinghua.edu.cn/f/b13d6710ac85487e9487/?dl=1"
+    [8]="https://cloud.tsinghua.edu.cn/f/b6cf354fd04b4fe0b909/?dl=1"
+    [9]="https://cloud.tsinghua.edu.cn/f/06a421a528044b15838c/?dl=1"
+)
+
+for key in "${!data_links[@]}"
+do
+    file=dogs-00$key.zip
+    if [ ! -f "$file" ]
+    then
+        wget -O "$file" "${data_links[$key]}"
+    else
+        echo "File '$file' does already exist."
+    fi
+done
+
+full_file=dogs.zip
+
+if [ ! -f "$full_file" ]
+then
+    cat dogs-*.zip > "$full_file"
+else
+    echo "File '$full_file' does already exist."
+fi
+echo "Unzipping..."
+unzip "$full_file" -d "$dir"
+mv "${dir}/high-resolution" "${dir}/${subdir_images}"
+
+# Downloading the metadata
+annot_link="https://cg.cs.tsinghua.edu.cn/ThuDogs/high-annotations.zip"
+annot_file=annotations.zip
+
+if [ ! -f "$annot_file" ]
+then
+    wget -O "$annot_file" "$annot_link"
+else
+    echo "File '$annot_file' does already exist."
+fi
+echo "Unzipping..."
+unzip "$annot_file" -d "$dir"
+mv "${dir}/High-Annotations" "${dir}/${subdir_annots}"
+
+# Downloading the file with split configuration
+split_link="https://cg.cs.tsinghua.edu.cn/ThuDogs/TrainValSplit.zip"
+split_file=train_val.zip
+
+if [ ! -f "$split_file" ]
+then
+    wget -O "$split_file" "$split_link"
+else
+    echo "File '$split_file' does already exist."
+fi
+echo "Unzipping..."
+unzip -j "$split_file" -d "$dir"
+
+rm *.zip
+
+echo "Data has been downloaded successfully!"

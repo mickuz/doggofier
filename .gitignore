@@ -129,7 +129,8 @@ dmypy.json
 .pyre/
 
 # Data
-.jpeg
-.jpg
-.xml
-.lst
+*.jpeg
+*.jpg
+*.xml
+*.lst
+*.xlsx
