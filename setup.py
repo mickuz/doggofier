@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='Doggofier',
-      version='0.2',
+      version='0.3',
       description='The image classifier for dog breeds',
       author='Michal Kuzniewicz',
       author_email='michal.kuzniewicz@tuta.io',
@@ -9,11 +9,13 @@ setup(name='Doggofier',
       packages=find_packages(include=['doggofier', 'doggofier.*']),
       install_requires=[
             'numpy',
+            'pandas',
             'torch',
             'torchvision'
       ],
       extras_require={
-            'plotting': ['matplotlib', 'jupyter']
+            'plotting': ['matplotlib', 'jupyter'],
+            'models': ['torchsummary']
       },
       setup_requires=[
             'flake8'
