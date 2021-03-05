@@ -29,13 +29,16 @@ class VGG16(Model):
             nn.Linear(7 * 7 * 512, 4096),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(4096, 1024),
+            nn.Linear(4096, 4096),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, 256),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Linear(256, n_classes)
+            nn.Sequential(
+                nn.Linear(4096, 256),
+                nn.ReLU(True),
+                nn.Dropout(),
+                nn.Linear(256, n_classes),
+                nn.LogSoftmax(dim=1)
+            )
         )
 
     def forward(self, images):
@@ -49,10 +52,14 @@ class ResNet50(Model):
     def __init__(self, n_classes):
         super(ResNet50, self).__init__(resnet50, n_classes)
         self.classifier = nn.Sequential(
+            nn.Linear(2048, 2048),
+            nn.ReLU(True),
+            nn.Dropout(),
             nn.Linear(2048, 256),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(256, n_classes)
+            nn.Linear(256, n_classes),
+            nn.LogSoftmax(dim=1)
         )
 
     def forward(self, images):
