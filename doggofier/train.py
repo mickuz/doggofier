@@ -46,7 +46,7 @@ def train(
             if (i + 1) % print_every == 0:
                 print(f'Epoch: {epoch + 1} / {epochs}\t\
                         Step: {i + 1} / {len(train_loader)}\t\
-                        Loss: {loss.item()}')
+                        Loss: {train_loss / (i + 1)}')
 
         with torch.no_grad():
 
@@ -55,7 +55,7 @@ def train(
 
             model.eval()
 
-            for images, labels in train_loader:
+            for images, labels in val_loader:
                 images, labels = images.to(device), labels.to(device)
 
                 outputs = model(images)
