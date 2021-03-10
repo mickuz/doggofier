@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='Doggofier',
-      version='0.4',
+      version='0.5',
       description='The image classifier for dog breeds',
       author='Michal Kuzniewicz',
       author_email='michal.kuzniewicz@tuta.io',
@@ -11,7 +11,8 @@ setup(name='Doggofier',
             'numpy',
             'pandas',
             'torch',
-            'torchvision'
+            'torchvision',
+            'flask'
       ],
       extras_require={
             'plotting': ['matplotlib', 'jupyter'],
