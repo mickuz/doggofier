@@ -137,3 +137,7 @@ dmypy.json
 
 # Model weights
 *.pth
+
+# Uploaded images
+uploads/*.jpg
+uploads/*.jpeg

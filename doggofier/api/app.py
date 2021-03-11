@@ -1,12 +1,14 @@
+import os
 import torch
 import torchvision.transforms as transforms
 from PIL import Image
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for, send_file
 from ..dataset import DogsDataset
 from ..models import ResNet50
 
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'uploads')
 
 dataset = DogsDataset('data')
 
@@ -45,10 +47,19 @@ def render_prediction(prediction):
     return prediction_cat
 
 
-@app.route('/')
-@app.route('/index')
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html')
+    if request.method == 'GET':
+        return render_template('index.html')
+
+    if request.method == 'POST':
+        image_file = request.files['file']
+        if image_file is not None:
+            filename = image_file.filename
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            image_file.save(filepath)
+
+        return redirect(url_for('predict', filename=filename))
 
 
 @app.route('/about')
@@ -56,13 +67,19 @@ def about():
     return render_template('about.html')
 
 
-@app.route('/predict', methods=['POST', 'GET'])
-def predict():
-    if request.method == 'POST':
-        file = request.files['file']
-        if file is not None:
-            image = transform_image(file)
-            prediction = get_prediction(image)
-            prediction_cat = render_prediction(prediction)
+@app.route('/images/<filename>')
+def images(filename):
+    return send_file(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-            return render_template('predict.html', pred=prediction_cat)
+
+@app.route('/predict/<filename>')
+def predict(filename):
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+    image = transform_image(filepath)
+    prediction = get_prediction(image)
+    category = render_prediction(prediction)
+
+    image_url = url_for('images', filename=filename)
+
+    return render_template('predict.html', image_url=image_url, pred=category)
