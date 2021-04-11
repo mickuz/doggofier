@@ -1,4 +1,5 @@
 import os
+import json
 import xml.etree.ElementTree as etree
 from PIL import Image
 from torch.utils.data import Dataset
@@ -6,6 +7,8 @@ from typing import Any, Callable, Optional, Tuple, Dict
 
 
 class DogsDataset(Dataset):
+    cat_dict = None
+
     def __init__(
             self,
             root: str,
@@ -15,10 +18,12 @@ class DogsDataset(Dataset):
     ) -> None:
 
         self.root = root
-        self.categories = self._create_categories()
         self.transform = transform
         self.target_transform = target_transform
         self._init_dataset(train)
+
+        if DogsDataset.cat_dict is None:
+            DogsDataset.cat_dict = DogsDataset.create_categories(root)
 
     def __len__(self) -> int:
         return len(self.paths)
@@ -33,7 +38,7 @@ class DogsDataset(Dataset):
         label, bbox = self._extract_annotation(annot_path)
 
         image = image.crop(bbox)
-        target = self._category_to_id(label)
+        target = DogsDataset.category_to_id(DogsDataset.cat_dict, label)
 
         if self.transform is not None:
             image = self.transform(image)
@@ -45,24 +50,9 @@ class DogsDataset(Dataset):
 
     def _init_dataset(self, train: bool) -> None:
         name = 'train.lst' if train else 'validation.lst'
-        with open(os.path.join(self.root, name), 'r') as file:
+        with open(os.path.join(self.root, name), 'r', encoding='utf8') as file:
             self.paths = file.readlines()
         self.paths = [path.split('//')[-1].rstrip() for path in self.paths]
-
-    def _create_categories(self) -> Dict[int, str]:
-        folders = os.listdir(os.path.join(self.root, 'annotations'))
-        categories = [folder.split('-')[-1].replace('_', ' ').capitalize()
-                      for folder in folders]
-
-        cat_dict = {i: cat for i, cat in enumerate(categories)}
-
-        return cat_dict
-
-    def _category_to_id(self, category: str) -> int:
-        category_keys = list(self.categories.keys())
-        category_values = list(self.categories.values())
-
-        return category_keys[category_values.index(category)]
 
     def _extract_annotation(self, path: str) -> Tuple[str, Tuple[int]]:
         tree = etree.parse(path)
@@ -81,5 +71,24 @@ class DogsDataset(Dataset):
 
         return label, bbox
 
-    def get_categories(self) -> Dict[int, str]:
-        return self.categories
+    @staticmethod
+    def create_categories(data_dir: str) -> Dict[int, str]:
+        folders = os.listdir(os.path.join(data_dir, 'annotations'))
+        categories = [folder.split('-')[-1].replace('_', ' ').capitalize()
+                      for folder in folders]
+
+        cat_dict = {i: cat for i, cat in enumerate(categories)}
+
+        return cat_dict
+
+    @staticmethod
+    def category_to_id(cat_dict: Dict[int, str], category: str) -> int:
+        category_keys = list(cat_dict.keys())
+        category_values = list(cat_dict.values())
+
+        return category_keys[category_values.index(category)]
+
+    @staticmethod
+    def save_categories(cat_dict: Dict[int, str], path: str) -> None:
+        with open(path, mode='w') as cat_file:
+            json.dump(cat_dict, cat_file)
