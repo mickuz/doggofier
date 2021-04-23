@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='Doggofier',
-      version='0.9',
+      version='0.10',
       description='The image classifier for dog breeds',
       author='Michal Kuzniewicz',
       author_email='michal.kuzniewicz@tuta.io',
