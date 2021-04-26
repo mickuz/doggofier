@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from typing import Optional
 from models import ResNet50, VGG16
+from data.dataset import DogsDataset
 from data.dataloader import fetch_dataloader
 from utils.logger import set_logger
 
@@ -16,28 +17,23 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     '--data_dir',
     default='data',
-    help='The directory with dataset.'
+    help='The directory with dataset, by default `data`.'
 )
 parser.add_argument(
     '--model_dir',
     default='models',
-    help='The directory where the train input and output will be stored.'
+    help='The directory where the train input and output will be stored,\
+          by default `models`.'
+)
+parser.add_argument(
+    '--categories_file',
+    default='categories.json',
+    help='Name of the file with dictionary mapping index values to labels,\
+          by default `categories.json` (json).'
 )
 parser.add_argument(
     'params_file',
     help='Name of the file with defined hyperparameters (json).'
-)
-parser.add_argument(
-    'log_file',
-    help='Name of the file with logs (log).'
-)
-parser.add_argument(
-    'weights_file',
-    help='Name of the file with state of the model (pth).'
-)
-parser.add_argument(
-    'loss_file',
-    help='Name of the file with history of losses and accuracies (pickle).'
 )
 parser.add_argument(
     'model',
@@ -59,7 +55,7 @@ def train(
 ) -> pd.DataFrame:
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    logging.info(f'Training on {device} device.')
+    logging.info(f'Training on {device} device...')
 
     epochs_no_improve = 0
     min_val_loss = np.Inf
@@ -141,6 +137,8 @@ def train(
 
                 return history
 
+    logging.info('Training has been completed.')
+
     history = pd.DataFrame(
         history,
         columns=['train_loss', 'val_loss', 'accuracy']
@@ -152,12 +150,14 @@ def train(
 if __name__ == '__main__':
     args = parser.parse_args()
 
+    file_name = args.params_file.split('.')[0]
+
     params_path = os.path.join(args.model_dir, args.params_file)
     with open(params_path, mode='r') as params_file:
         params = json.load(params_file)
 
     torch.manual_seed(42)
-    set_logger(os.path.join(args.model_dir, args.log_file))
+    set_logger(os.path.join(args.model_dir, file_name + '.log'))
 
     logging.info('Loading the datasets...')
 
@@ -171,6 +171,11 @@ if __name__ == '__main__':
     val_loader = dataloaders['val']
 
     logging.info('Dataset loading has been completed.')
+
+    categories_path = os.path.join(args.data_dir, args.categories_file)
+    if not os.path.exists(categories_path):
+        categories = DogsDataset.create_categories(args.data_dir)
+        DogsDataset.save_categories(categories, categories_path)
 
     if args.model == 'resnet50':
         model = ResNet50(params['n_classes'])
@@ -186,8 +191,8 @@ if __name__ == '__main__':
         optimizer,
         train_loader,
         val_loader,
-        os.path.join(args.model_dir, args.weights_file),
+        os.path.join(args.model_dir, file_name + '.pth'),
         epochs=params['epochs'],
         max_epoch_stop=params['max_epoch_stop']
     )
-    history.to_pickle(os.path.join(args.model_dir, args.loss_file))
+    history.to_pickle(os.path.join(args.model_dir, file_name + '.p'))
