@@ -186,8 +186,8 @@ if __name__ == '__main__':
         optimizer,
         train_loader,
         val_loader,
-        os.path.join(args.model_dir, args.weights_dir),
+        os.path.join(args.model_dir, args.weights_file),
         epochs=params['epochs'],
         max_epoch_stop=params['max_epoch_stop']
     )
-    history.to_pickle(args.loss_file)
+    history.to_pickle(os.path.join(args.model_dir, args.loss_file))
