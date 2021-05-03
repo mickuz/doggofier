@@ -4,14 +4,11 @@ COPY ./requirements.txt /app/requirements.txt
 
 RUN pip install -r /app/requirements.txt
 
-COPY ./doggofier /app/doggofier
+COPY ./doggofier/models.py /app/doggofier/models.py
+COPY ./data/categories.json /app/data/categories.json
 COPY ./models /app/models
-COPY ./run.py /app/run.py
+COPY ./app /app/app
 
 WORKDIR /app
 
-EXPOSE 5000
-
-ENTRYPOINT [ "python" ]
-CMD [ "run.py" ]
-
+CMD gunicorn -b 0.0.0.0:$PORT app.wsgi:app --timeout 0

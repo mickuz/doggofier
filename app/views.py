@@ -1,11 +1,14 @@
 import os
+import json
 from flask import Flask, render_template, request, redirect, url_for, send_file
-from doggofier.api.utils import (transform_image, load_model, get_prediction,
-                                 render_prediction)
+from app.utils import transform_image, load_model, get_prediction
 
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'uploads')
+if app.config['ENV'] == 'production':
+    app.config.from_object('app.config.ProdConfig')
+else:
+    app.config.from_object('app.config.DevConfig')
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -37,10 +40,13 @@ def images(filename):
 def predict(filename):
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
+    with open(app.config['CATEGORIES_PATH'], mode='r') as categories_file:
+        categories = json.load(categories_file)
+
     image = transform_image(filepath)
-    model = load_model('models/resnet50.pth', 130)
+    model = load_model(app.config['MODEL_PATH'], len(categories))
     prediction = get_prediction(image, model)
-    category = render_prediction(prediction, 'data')
+    category = categories[str(prediction)]
 
     image_url = url_for('images', filename=filename)
 

@@ -1,7 +1,6 @@
 import torch
 from PIL import Image
 import torchvision.transforms as transforms
-from doggofier.dataset import DogsDataset
 from doggofier.models import ResNet50
 
 
@@ -21,7 +20,7 @@ def transform_image(image_path):
 
 
 def load_model(model_path, num_classes):
-    model = ResNet50(num_classes)
+    model = ResNet50(num_classes, pretrained=False)
     model.load_state_dict(torch.load(model_path))
     model.eval()
 
@@ -34,10 +33,3 @@ def get_prediction(image, model):
     prediction = prediction.item()
 
     return prediction
-
-
-def render_prediction(prediction, dataset_root):
-    categories = DogsDataset(dataset_root).get_categories()
-    prediction_cat = categories[prediction]
-
-    return prediction_cat
