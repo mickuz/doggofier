@@ -2,10 +2,6 @@ import torch.nn as nn
 import torchvision.models as models
 
 
-resnet50 = models.resnet50(pretrained=True)
-vgg16 = models.vgg16(pretrained=True)
-
-
 class Model(nn.Module):
     def __init__(self, model, n_classes):
         super(Model, self).__init__()
@@ -23,7 +19,9 @@ class Model(nn.Module):
 
 
 class VGG16(Model):
-    def __init__(self, n_classes):
+    def __init__(self, n_classes, pretrained=True):
+        vgg16 = models.vgg16(pretrained=pretrained)
+
         super(VGG16, self).__init__(vgg16, n_classes)
         self.classifier = nn.Sequential(
             nn.Linear(7 * 7 * 512, 4096),
@@ -49,7 +47,9 @@ class VGG16(Model):
 
 
 class ResNet50(Model):
-    def __init__(self, n_classes):
+    def __init__(self, n_classes, pretrained=True):
+        resnet50 = models.resnet50(pretrained=pretrained)
+
         super(ResNet50, self).__init__(resnet50, n_classes)
         self.classifier = nn.Sequential(
             nn.Linear(2048, 2048),
