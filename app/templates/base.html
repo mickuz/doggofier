@@ -62,13 +62,26 @@
             crossorigin="anonymous"
         ></script>
         <script>
-            $("#inputGroupFile").on("change", function () {
-                let fileName = $(this).val();
-                fileParts = fileName.split(/\/|\\/);
-                let name = fileParts[fileParts.length - 1];
-                console.log(fileParts);
-                $(this).next(".custom-file-label").html(name);
-            });
+            $("#inputGroupFile").on(
+                "change", function () {
+                    let fileName = $(this).val();
+                    fileParts = fileName.split(/\/|\\/);
+                    let name = fileParts[fileParts.length - 1];
+                    console.log(fileParts);
+                    $(this).next(".custom-file-label").html(name);
+                });
+        </script>
+        <script>
+            $(document).ready(
+                function() {
+                    $('input:file').change(
+                        function() {
+                            if ($(this).val()) {
+                                $('input:submit').attr('disabled', false);
+                            }
+                        }
+                    );
+                });
         </script>
     </body>
 </html>

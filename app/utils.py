@@ -1,7 +1,7 @@
 import torch
 from PIL import Image
 import torchvision.transforms as transforms
-from doggofier.models import ResNet50
+from doggofier.models import ResNet50, VGG16
 
 
 def transform_image(image_path):
@@ -19,8 +19,13 @@ def transform_image(image_path):
     return image
 
 
-def load_model(model_path, num_classes):
-    model = ResNet50(num_classes, pretrained=False)
+def load_model(model, model_path, num_classes):
+    if model == 'resnet50':
+        model = ResNet50(num_classes, pretrained=False)
+    elif model == 'vgg16':
+        model = VGG16(num_classes, pretrained=False)
+    else:
+        raise ValueError('Wrong model!')
     model.load_state_dict(torch.load(model_path))
     model.eval()
 
@@ -29,7 +34,8 @@ def load_model(model_path, num_classes):
 
 def get_prediction(image, model):
     output = model(image)
-    _, prediction = output.max(1)
+    log_softmax, prediction = output.max(1)
+    probability = torch.exp(log_softmax).item()
     prediction = prediction.item()
 
-    return prediction
+    return probability, prediction

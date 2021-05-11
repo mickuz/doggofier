@@ -44,10 +44,19 @@ def predict(filename):
         categories = json.load(categories_file)
 
     image = transform_image(filepath)
-    model = load_model(app.config['MODEL_PATH'], len(categories))
-    prediction = get_prediction(image, model)
+    model = load_model(
+        app.config['MODEL_NAME'],
+        app.config['MODEL_PATH'],
+        len(categories)
+    )
+    probability, prediction = get_prediction(image, model)
     category = categories[str(prediction)]
 
     image_url = url_for('images', filename=filename)
 
-    return render_template('predict.html', image_url=image_url, pred=category)
+    return render_template(
+        'predict.html',
+        image_url=image_url,
+        pred=category,
+        prob=round(probability * 100, 2)
+    )

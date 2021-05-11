@@ -6,7 +6,8 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     UPLOAD_FOLDER = os.path.join(basedir, 'uploads')
-    MODEL_PATH = os.path.join(os.getcwd(), 'models', 'resnet50.pth')
+    MODEL_NAME = 'resnet50'
+    MODEL_PATH = os.path.join(os.getcwd(), 'models', 'resnet50_lr1e-3.pth')
     CATEGORIES_PATH = os.path.join(os.getcwd(), 'data', 'categories.json')
 
 

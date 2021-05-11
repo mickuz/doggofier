@@ -7,6 +7,8 @@
         <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
             <p class="lead">
                 File uploaded successfully. You have uploaded an image of <b>{{ pred }}</b>!
+                <br>
+                Confidence: <b>{{ prob }}%</b>
             </p>
             <img src="{{ image_url }}" alt="Input image" class="img-thumbnail">
         </div>
