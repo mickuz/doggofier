@@ -1,47 +1,37 @@
 import torch.nn as nn
 import torchvision.models as models
+from abc import abstractmethod, ABC
 
 
-class Model(nn.Module):
-    def __init__(self, model, n_classes):
+class Model(nn.Module, ABC):
+    def __init__(self, model, pretrained):
         super(Model, self).__init__()
-        for param in model.parameters():
-            param.requires_grad_(False)
+        if pretrained:
+            for param in model.parameters():
+                param.requires_grad_(False)
 
-        modules = list(model.children())[:-1]
-        self.model = nn.Sequential(*modules)
-
-    def _pre_forward(self, images):
-        features = self.model(images)
-        features = features.view(features.size(0), -1)
-
-        return features
+    @abstractmethod
+    def forward(self, images):
+        pass
 
 
 class VGG16(Model):
     def __init__(self, n_classes, pretrained=True):
         vgg16 = models.vgg16(pretrained=pretrained)
 
-        super(VGG16, self).__init__(vgg16, n_classes)
-        self.classifier = nn.Sequential(
-            nn.Linear(7 * 7 * 512, 4096),
+        super(VGG16, self).__init__(vgg16, pretrained)
+        self.model = vgg16
+        n_inputs = self.model.classifier[6].in_features
+        self.model.classifier[6] = nn.Sequential(
+            nn.Linear(n_inputs, 256),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(4096, 4096),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Sequential(
-                nn.Linear(4096, 256),
-                nn.ReLU(True),
-                nn.Dropout(),
-                nn.Linear(256, n_classes),
-                nn.LogSoftmax(dim=1)
-            )
+            nn.Linear(256, n_classes),
+            nn.LogSoftmax(dim=1)
         )
 
     def forward(self, images):
-        features = self._pre_forward(images)
-        predictions = self.classifier(features)
+        predictions = self.model(images)
 
         return predictions
 
@@ -50,9 +40,11 @@ class ResNet50(Model):
     def __init__(self, n_classes, pretrained=True):
         resnet50 = models.resnet50(pretrained=pretrained)
 
-        super(ResNet50, self).__init__(resnet50, n_classes)
-        self.classifier = nn.Sequential(
-            nn.Linear(2048, 2048),
+        super(ResNet50, self).__init__(resnet50, pretrained)
+        self.model = resnet50
+        n_inputs = self.model.fc.in_features
+        self.model.fc = nn.Sequential(
+            nn.Linear(n_inputs, 2048),
             nn.ReLU(True),
             nn.Dropout(),
             nn.Linear(2048, 256),
@@ -63,7 +55,6 @@ class ResNet50(Model):
         )
 
     def forward(self, images):
-        features = self._pre_forward(images)
-        predictions = self.classifier(features)
+        predictions = self.model(images)
 
         return predictions
