@@ -5,8 +5,8 @@ import argparse
 import torch
 from typing import Tuple
 from models import ResNet50, VGG16
-from data.dataloader import fetch_dataloader
-from utils.logger import set_logger
+from doggofier.data.dataloader import fetch_dataloader
+from doggofier.utils.logger import set_logger
 
 
 parser = argparse.ArgumentParser()

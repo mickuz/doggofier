@@ -7,9 +7,9 @@ import numpy as np
 import pandas as pd
 from typing import Optional
 from models import ResNet50, VGG16
-from data.dataset import DogsDataset
-from data.dataloader import fetch_dataloader
-from utils.logger import set_logger
+from doggofier.data.dataset import DogsDataset
+from doggofier.data.dataloader import fetch_dataloader
+from doggofier.utils.logger import set_logger
 
 
 parser = argparse.ArgumentParser()
