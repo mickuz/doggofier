@@ -1,7 +1,7 @@
 import torchvision.transforms as transforms
 from typing import List, Dict, Union
 from torch.utils.data import DataLoader, random_split
-from doggofier.data.dataset import DogsDataset
+from data.dataset import DogsDataset
 
 
 VALID_TYPES = {'train', 'val', 'test'}
