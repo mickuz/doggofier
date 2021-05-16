@@ -2,6 +2,7 @@
 training in batches.
 """
 
+import torch
 import torchvision.transforms as transforms
 from typing import List, Dict, Union
 from torch.utils.data import DataLoader, random_split
@@ -31,6 +32,7 @@ def fetch_dataloader(
         data_types: List[str],
         data_dir: str,
         val_size: float,
+        seed: int,
         params: Dict[str, Union[int, float]]
 ) -> Dict[str, DataLoader]:
     """Retrieves the data loaders.
@@ -44,6 +46,8 @@ def fetch_dataloader(
         The directory where the data is stored.
     val_size : float
         Proportion of validation and test split size, value between 0 and 1.
+    seed : int
+        A value to initialize a pseudorandom number generator.
     params : Dict[str, Union[int, float]]
         The hyperparameters.
 
@@ -73,7 +77,8 @@ def fetch_dataloader(
         [
             val_part := int(val_size * len(eval_dataset)),
             len(eval_dataset) - val_part
-        ]
+        ],
+        generator=torch.Generator().manual_seed(seed)
     )
 
     dataloaders = {}

@@ -94,13 +94,14 @@ if __name__ == '__main__':
     with open(params_path, mode='r') as params_file:
         params = json.load(params_file)
 
-    torch.manual_seed(42)
+    seed = 42
+    torch.manual_seed(seed)
     set_logger(os.path.join(args.model_dir, 'evaluation.log'))
 
     logging.info(f'Evaluation for model: {file_name}')
     logging.info('Loading the dataset...')
 
-    dataloaders = fetch_dataloader(['test'], args.data_dir, 0.5, params)
+    dataloaders = fetch_dataloader(['test'], args.data_dir, 0.5, seed, params)
     test_loader = dataloaders['test']
 
     logging.info('Dataset loading has been completed.')

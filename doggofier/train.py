@@ -188,7 +188,8 @@ if __name__ == '__main__':
     with open(params_path, mode='r') as params_file:
         params = json.load(params_file)
 
-    torch.manual_seed(42)
+    seed = 42
+    torch.manual_seed(seed)
     set_logger(os.path.join(args.model_dir, file_name + '.log'))
 
     logging.info('Loading the datasets...')
@@ -197,6 +198,7 @@ if __name__ == '__main__':
         ['train', 'val'],
         args.data_dir,
         0.5,
+        seed,
         params
     )
     train_loader = dataloaders['train']
