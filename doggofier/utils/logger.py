@@ -1,7 +1,17 @@
+"""This module implements logging tools."""
+
 import logging
 
 
-def set_logger(log_path):
+def set_logger(log_path: str) -> None:
+    """Configures the logger to save information in a certain format to
+    the specified output.
+
+    Parameters
+    ----------
+    log_path : str
+        A path where the logs are going to be saved.
+    """
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 

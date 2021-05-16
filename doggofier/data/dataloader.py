@@ -1,3 +1,7 @@
+"""This module implements a function to prepare data loaders which enable
+training in batches.
+"""
+
 import torchvision.transforms as transforms
 from typing import List, Dict, Union
 from torch.utils.data import DataLoader, random_split
@@ -29,7 +33,30 @@ def fetch_dataloader(
         val_size: float,
         params: Dict[str, Union[int, float]]
 ) -> Dict[str, DataLoader]:
+    """Retrieves the data loaders.
 
+    Parameters
+    ----------
+    data_types : List[str]
+        Specifies which dataset splits should be used. It can contain only
+        'train', 'val' or 'test' values.
+    data_dir : str
+        The directory where the data is stored.
+    val_size : float
+        Proportion of validation and test split size, value between 0 and 1.
+    params : Dict[str, Union[int, float]]
+        The hyperparameters.
+
+    Returns
+    -------
+    Dict[str, DataLoader]
+        The prepared data loaders.
+
+    Raises
+    ------
+    ValueError
+        When list of data types contains inappropriate values.
+    """
     train_dataset = DogsDataset(
         data_dir,
         train=True,

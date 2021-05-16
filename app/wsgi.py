@@ -1,3 +1,5 @@
+"""This script is responsible for starting a Flask application."""
+
 import os
 from app.views import app
 

@@ -1,9 +1,12 @@
+"""This script allows an user to run the evaluation process directly from
+the command line interface.
+"""
+
 import os
 import json
 import logging
 import argparse
 import torch
-from typing import Tuple
 from models import ResNet50, VGG16
 from data.dataloader import fetch_dataloader
 from utils.logger import set_logger
@@ -38,8 +41,20 @@ def evaluate(
         criterion: torch.nn.Module,
         test_loader: torch.utils.data.DataLoader,
         load_path: str
-) -> Tuple[float, float]:
+) -> None:
+    """The model evaluation process.
 
+    Parameters
+    ----------
+    model : torch.nn.Module
+        Model to evaluate.
+    criterion : torch.nn.Module
+        The loss function.
+    test_loader : torch.utils.data.DataLoader
+        The data loader to pass batches of examples to the testing loop.
+    load_path : str
+        A path where model state dictionary is stored.
+    """
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     logging.info('Evaluation in process...')
 

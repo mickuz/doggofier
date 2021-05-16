@@ -1,3 +1,7 @@
+"""This module implements view functions responding to requests to
+the application.
+"""
+
 import os
 import json
 from flask import Flask, render_template, request, redirect, url_for, send_file

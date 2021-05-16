@@ -1,3 +1,7 @@
+"""This script allows an user to run the training process directly from
+the command line interface.
+"""
+
 import os
 import json
 import logging
@@ -53,7 +57,35 @@ def train(
         max_epoch_stop: Optional[int] = 3,
         print_every: Optional[int] = 100
 ) -> pd.DataFrame:
+    """The model training process with validation.
 
+    Parameters
+    ----------
+    model : torch.nn.Module
+        Model to train.
+    criterion : torch.nn.Module
+        The loss function.
+    optimizer : torch.optim.Optimizer
+        The optimization algorithm.
+    train_loader : torch.utils.data.DataLoader
+        The data loader to pass batches of examples to the training loop.
+    val_loader : torch.utils.data.DataLoader
+        The data loader to pass batches of examples to the validation loop.
+    save_path : str
+        A path where model state dictionary is going to be saved.
+    epochs : Optional[int], optional
+        Number of training epochs, by default 20.
+    max_epoch_stop : Optional[int], optional
+        Number of training epochs with no improvement before stopping
+        the process, by default 3.
+    print_every : Optional[int], optional
+        Number of iterations between printing the results, by default 100.
+
+    Returns
+    -------
+    pd.DataFrame
+        The result values of loss function and accuracy after each epoch.
+    """
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     logging.info(f'Training on {device} device...')
 
@@ -75,8 +107,6 @@ def train(
             optimizer.zero_grad()
 
             outputs = model(images)
-            print(outputs)
-            print(outputs.shape)
             loss = criterion(outputs, labels)
             loss.backward()
 

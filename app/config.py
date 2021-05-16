@@ -1,3 +1,5 @@
+"""This module contains configurations for various environments."""
+
 import os
 
 
