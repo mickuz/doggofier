@@ -2,8 +2,115 @@
 
 {% block content %}
 <div class="row">
-    <p class="lead">
-        Put description
-    </p>
+    <div class="col-12 col-md">
+        <img class="img-fluid mx-auto d-block" src="https://raw.githubusercontent.com/mickuz/doggofier/dev/imgs/stack.png">
+        <br>
+        <h3>Introduction</h3>
+        <p class="lead" align="justify">
+            Doggofier is a web application that allows an user to upload JPEG photo of a dog and CNN running in the background would predict a breed of the dog with certain confidence. As a main deep learning technology PyTorch framework was used with its supporting library Torchvision for computer vision tasks. For experiments two popular architectures were chosen: ResNet-50 and VGG-16, both pretrained on the ImageNet dataset and fine-tuned on the Tsinghua Dogs dataset with customized classifiers. Also the experimentation interface was prepared so it's possible to easily add a new model and train it from the command line with hyperparamters specified in JSON file. The application itself was developed with the usage of Flask framework and contenerized in Docker to isolate the whole environment. Eventually deployment to Heroku was performed with Gunicorn as a WSGI server.
+        </p>
+        <br>
+        <h3>Dataset</h3>
+        <p class="lead" align="justify">
+            The Tsinghua Dogs is an image dataset for fine-grained classification of dog breeds. It includes 130 categories and over 70,000 images, 65% of them are collected from people's real life. Each category contains at least 200 images and a maximum of 7,449 images. In comparison to similar datasets, it has more categories and more carefully chosen images for each category. Additionally, the dataset is annotated with bounding boxes of the dog's body and head in each image, which can be used for object detection and localization problems. It is worth mentioning that the dataset is slightly biased towards Chinese dogs population as all images was taken in China. In the chart below you can see the most common values in the dataset.
+        </p>
+        <br>
+        <img class="img-fluid mx-auto d-block" src="https://raw.githubusercontent.com/mickuz/doggofier/dev/imgs/distribution.png">
+        <br>
+        <p class="lead" align="justify">
+            When training the models some data augmentations were employed: an image was resized such that the shorter sidelength was 256, then randomly cropped to 224 x 224 and eventually randomly flipped in horizontal axis. 
+        </p>
+        <br>
+        <h3>Models</h3>
+        <br>
+        <h5>ResNet-50</h5>
+        <p class="lead" align="justify">
+            ResNet-50 is a residual network made of 50 layers proposed in the paper "Deep Residual Learning for Image Recognition". It's widely used for many computer vision tasks because it allows to build very deep networks without hitting vanishing or exploding gradients problem. This is achieved by introducing residual blocks consisting of shortcuts that skip one or more layers. The shortcut connections simply perform identity mapping, and their outputs are added to the outputs of stacked layers. This kind of mapping doesn't add any extra parameter nor computational complexity. In the picture below there is an architecture of ResNet-50 network.
+        </p>
+        <br>
+        <img class="img-fluid mx-auto d-block" src="https://raw.githubusercontent.com/mickuz/doggofier/dev/imgs/resnet50.png">
+        <br>
+        <p class="lead" align="justify">
+            The original classifier was changed for a sequential block consisting of 2 fully connected layers with ReLU as an activation function followed by 2 dropout layers. At the end the fully connected layer with log softmax function was added.
+        </p>
+        <br>
+        <h5>VGG-16</h5>
+        <p class="lead" align="justify">
+            VGG-16 is a convolutional neural network architecture proposed in the paper "Very Deep Convolutional Networks For Large-Scale Image Recognition". The most unique thing about this network in comparison to the earlier architectures is the usage of multiple kernel-sized 3 x 3 filters one after another instead of using large 7 x 7 or 11 x 11 filters at the beginning of the network. The convolution stride is fixed to 1 pixel and the spatial padding of convolutional layer input is such that the spatial resolution is preserved after convolution. The architecture is depicted in the picture below.
+        </p>
+        <br>
+        <img class="img-fluid mx-auto d-block" src="https://raw.githubusercontent.com/mickuz/doggofier/dev/imgs/vgg16.png">
+        <br>
+        <p class="lead" align="justify">
+            The last layer of classifier was replaced with a block of one fully connected layer with ReLU function and dropout layer and one fully connected layer with log softmax function.
+        </p>
+        <br>
+        <h3>Evaluation</h3>
+        <br>
+        <p class="lead" align="justify">
+            Two training runs were performed, one using ResNet-50 architecture and one using VGG-16 architecture. The hyperparameters for both runs were the same: batch size of 32, learning rate equal 0.001 and 20 epochs. Early stopping was applied to prevent overfitting, so eventually training for ResNet-50 stopped after 12 epochs and for VGG-16 &ndash; after 8 epochs. Below there are presented plots how the value of loss function and accuracy change with training epochs for ResNet-50 model.
+        </p>
+        <br>
+        <img class="img-fluid mx-auto d-block" src="https://raw.githubusercontent.com/mickuz/doggofier/dev/imgs/resnet50-results.png">
+        <br>
+        <p class="lead" align="justify">
+            In the first few epochs the value of train loss function dropped significantly and later it fluctuated around certain value. The validation loss function plot has similar shape but it's beneath the train plot due to possible unrepresentativeness of validation data. The accuracy raised to around 68%. For comparison below there are the same plots for VGG-16 architecture.
+        </p>
+        <br>
+        <img class="img-fluid mx-auto d-block" src="https://raw.githubusercontent.com/mickuz/doggofier/dev/imgs/vgg16-results.png">
+        <br>
+        <p class="lead" align="justify">
+            The plots are similar to the previous ones, but the drops at the beginning of training are not that significant. Also accuracy is slightly higher reaching over 73%. The reason for that can be bigger number of pretrained parameters for VGG-16 model thus it can extract features better. Because of the superior performance of the VGG-16 architecture, it was chosen for final evaluation on test dataset. During the evaluation the accuracy of 73.3% was achieved. At the end there are presented benchmarks for various models on the Tsinghua Dogs dataset compared with the value achieved by VGG-16 model created in this project. 
+        </p>
+        <br>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Model</th>
+                    <th>Backbone</th>
+                    <th>Batchsize</th>
+                    <th>Epochs</th>
+                    <th>Accuracy</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="pure-table-odd">
+                    <td>WS-DAN</td>
+                    <td>Inception v3</td>
+                    <td>12</td>
+                    <td>80</td>
+                    <td>86.4%</td>
+                </tr>
+                <tr>
+                    <td>TBMSL-Net</td>
+                    <td>Resnet50</td>
+                    <td>6</td>
+                    <td>200</td>
+                    <td>83.7%</td>
+                </tr>
+                <tr class="pure-table-odd">
+                    <td>PMG</td>
+                    <td>Resnet50</td>
+                    <td>16</td>
+                    <td>200</td>
+                    <td>83.5%</td>
+                </tr>
+                <tr>
+                    <td>Inception v3</td>
+                    <td>N/A</td>
+                    <td>64</td>
+                    <td>200</td>
+                    <td>77.7%</td>
+                </tr>
+                <tr>
+                    <td>VGG-16</td>
+                    <td>N/A</td>
+                    <td>32</td>
+                    <td>8</td>
+                    <td>73.3%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}
