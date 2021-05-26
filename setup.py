@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='Doggofier',
-      version='0.13',
+      version='1.0',
       description='The image classifier for dog breeds',
       author='Michal Kuzniewicz',
       author_email='michal.kuzniewicz@tuta.io',
@@ -21,4 +21,8 @@ setup(name='Doggofier',
       },
       setup_requires=[
             'flake8'
+      ],
+      scripts=[
+            'doggofier/train.py',
+            'doggofier/evaluate.py'
       ])

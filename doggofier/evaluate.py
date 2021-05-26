@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """This script allows an user to run the evaluation process directly from
 the command line interface.
 """
@@ -7,9 +9,9 @@ import json
 import logging
 import argparse
 import torch
-from models import ResNet50, VGG16
-from data.dataloader import fetch_dataloader
-from utils.logger import set_logger
+from doggofier.models import ResNet50, VGG16
+from doggofier.data.dataloader import fetch_dataloader
+from doggofier.utils.logger import set_logger
 
 
 parser = argparse.ArgumentParser()
