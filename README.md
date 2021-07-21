@@ -11,7 +11,7 @@ Dataset [[1]](#1).**
 
 Doggofier is a web application that allows an user to upload JPEG photo of a dog and CNN running in the background would predict a breed of the dog with certain confidence. As a main deep learning technology PyTorch framework was used with its supporting library Torchvision for computer vision tasks. For experiments two popular architectures were chosen: ResNet-50 [[2]](#2) and VGG-16 [[3]](#3), both pretrained on the ImageNet dataset and fine-tuned on the Tsinghua Dogs dataset with customized classifiers. Also the experimentation interface was prepared so it's possible to easily add a new model and train it from the command line with hyperparameters specified in JSON file. The application itself was developed with the usage of Flask framework and contenerized in Docker to isolate the whole environment. Eventually deployment to Heroku was performed with Gunicorn as a WSGI server.
 
-To find more information about the project head over to the [application website](doggofier.herokuapp.com).
+To find more information about the project head over to the [application website](https://doggofier.herokuapp.com/).
 
 ## Installation
 
@@ -39,7 +39,7 @@ Similarly you can run the script evaluating the model:
 doggofier/evaluate.py [--data_dir] [--model_dir] [--cat_file] params_file model
 ```
 
-If you want to contenerize and deploy the application to Heroku you need to have Docker installed and you must be signed up [here](heroku.com). First build an image of your container:
+If you want to contenerize and deploy the application to Heroku you need to have Docker installed and you must be signed up [here](https://www.heroku.com/). First build an image of your container:
 
 ```
 docker image build -t doggofier-app .
